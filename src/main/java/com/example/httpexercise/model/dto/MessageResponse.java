@@ -1,4 +1,4 @@
 package com.example.httpexercise.model.dto;
 
-public record MessageResponse(String message) {
+public record MessageResponse(String responseMessage) {
 }
