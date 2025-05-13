@@ -29,7 +29,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(username, password));
         var accessToken = jwtUtil.generateAccessToken(authentication);
 
-        playersService.updateLevelIfEligible(accessToken, 0);
+        playersService.updateLevelIfAtLevel(0, accessToken);
         return new AuthResponse(accessToken);
     }
 }

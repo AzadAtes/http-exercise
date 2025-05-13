@@ -1,40 +1,41 @@
 package com.example.httpexercise.model.mapper;
 
 import com.example.httpexercise.model.Player;
+import com.example.httpexercise.model.entity.Message;
 import com.example.httpexercise.model.entity.User;
+import com.example.httpexercise.repository.MessageRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class PlayerMapper {
+@Component
+@RequiredArgsConstructor
+public class PlayerMapper {
 
-    private PlayerMapper() {
-        // utility class
-    }
+    private final MessageRepository messageRepository;
 
-    /**
-     * Convert a User entity to a PlayerDto.
-     */
-    public static Player toDto(User user) {
+    public Player toDto(User user) {
         if (user == null) {
             return null;
         }
+
+        Message latestMessage = messageRepository.findTopByUserOrderByUpdatedAtDescCreatedAtDesc(user);
+
+        String messageContent = (user.getLevel() == 4) ? null : (latestMessage != null ? latestMessage.getContent() : null);
+
         return new Player(
                 user.getUsername(),
                 user.getLevel(),
-                user.getLastLevelUpAt()
+                user.getLastLevelUpAt(),
+                messageContent
         );
     }
 
-    /**
-     * Convert a list of User entities to a list of PlayerDto.
-     */
-    public static List<Player> toDtoList(List<User> users) {
+    public List<Player> toDtoList(List<User> users) {
         return users.stream()
-                .map(PlayerMapper::toDto)
+                .map(this::toDto)
                 .collect(Collectors.toList());
     }
-
-    // If you ever need the reverse mapping, you could add:
-    // public static User toEntity(PlayerDto dto) { ... }
 }

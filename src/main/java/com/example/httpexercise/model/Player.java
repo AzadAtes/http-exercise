@@ -6,11 +6,17 @@ public class Player {
     private final String username;
     private final int    level;
     private final LocalDateTime lastLevelUpAt;
+    private final String message;
 
-    public Player(String username, int level, LocalDateTime lastLevelUpAt) {
+    public Player(String username, int level, LocalDateTime lastLevelUpAt, String message) {
         this.username       = username;
         this.level          = level;
         this.lastLevelUpAt  = lastLevelUpAt;
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public String getUsername() {

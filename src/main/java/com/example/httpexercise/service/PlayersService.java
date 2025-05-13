@@ -8,6 +8,8 @@ import com.example.httpexercise.repository.UserRepository;
 import com.example.httpexercise.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +24,30 @@ public class PlayersService {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final PlayerMapper playerMapper;
     private final JwtUtil jwtUtil;
-
 
     public List<Player> getPlayers() {
         List<User> players = userRepository.findUsersWithLevelAbove(0);
-        return PlayerMapper.toDtoList(players);
+        return playerMapper.toDtoList(players);
     }
 
-    public void updateLevelIfEligible(String token, Integer level) {
+    public void updateLevelIfAtLevel(Integer level, String token) {
 
         String username = jwtUtil.getUsernameFromToken(token);
+        updateLevelForUser(username, level);
+    }
+
+    public void updateLevelIfAtLevel(Integer level) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        updateLevelForUser(username, level);
+    }
+
+    private void updateLevelForUser(String username, Integer level) {
+
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
