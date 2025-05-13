@@ -1,6 +1,6 @@
 package com.example.httpexercise.config.filter;
 
-import com.example.httpexercise.model.dto.ErrorResponse;
+import com.example.httpexercise.model.dto.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +18,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write(new ObjectMapper().writeValueAsString(new ErrorResponse("Unauthorized")));
+        response.getWriter().write(new ObjectMapper().writeValueAsString(new MessageResponse("Unauthorized")));
     }
 }
