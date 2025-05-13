@@ -15,6 +15,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final PlayersService playersService;
 
     public AuthResponse login(AuthRequest authRequest) {
         var username = authRequest.username();
@@ -28,6 +29,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(username, password));
         var accessToken = jwtUtil.generateAccessToken(authentication);
 
+        playersService.updateLevelIfEligible(accessToken, 0);
         return new AuthResponse(accessToken);
     }
 }
