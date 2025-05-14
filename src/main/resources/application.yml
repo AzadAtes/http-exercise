@@ -21,3 +21,6 @@ security:
   jwt:
     secret: w4vjmZlJSat95OPwx1BCwLp6T3vNbhZJuH6EPZtbL+k=
     expiration-ms: 86400000
+#server:
+#  address: 0.0.0.0
+#  port: 8080
