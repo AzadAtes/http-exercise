@@ -12,6 +12,6 @@ public class RoutesController {
 
     @GetMapping("/routes")
     public ResponseEntity<?> welcome() {
-        return ResponseEntity.ok(new MessageResponse("ApiRoutes: [{ Path: '/auth/login', AllowedMethods: POST }, { Path: '/api/messages', AllowedMethods: GET, POST }, { Path: '/api/messages/{ID}', AllowedMethods: GET, PUT, DELETE }]"));
+        return ResponseEntity.ok(new MessageResponse("ApiRoutes: [{ Path: '/auth/login', AllowedMethods: 'POST' }, { Path: '/api/messages', AllowedMethods: 'GET, POST' }, { Path: '/api/messages/{ID}', AllowedMethods: 'GET, PUT, DELETE' }]"));
     }
 }

@@ -106,8 +106,8 @@
                 card.innerHTML = `
             <div class="player-info">
               <strong>${p.username}</strong>
-              ${p.message ? `<div>${p.message}</div>` : ''}
-              ${p.messageId ? `<div>${p.messageId}</div>` : ''}
+              ${p.message ? `<div>Message: ${p.message}</div>` : ''}
+              ${p.messageId ? `<div>MessageID: ${p.messageId}</div>` : ''}
             </div>
             <div class="player-stars">
               ${renderStars(p.level)}
