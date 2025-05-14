@@ -33,7 +33,8 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->authorize
-                    .requestMatchers("/routes","/auth/login", "/api/playersview").permitAll()
+                    .requestMatchers("/api/playersview", "/routes","/auth/login", "/api/playersview").permitAll()
+                    .requestMatchers("/", "/index.html", "/css/**", "/js/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)

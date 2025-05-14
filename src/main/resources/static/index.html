@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Live Players Dashboard</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+        #grid {
+            width: 75%;
+            display: grid;
+            grid-template-rows: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .player-card {
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .player-info {
+            flex: 2;
+            padding: 8px;
+            overflow: hidden;
+        }
+        .player-info strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .player-stars {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eee;
+        }
+        .star {
+            font-size: 1.2em;
+            margin: 0 2px;
+        }
+
+        #scoreboard {
+            width: 25%;
+            padding: 16px;
+            border-left: 2px solid #888;
+            box-sizing: border-box;
+            background: #f5f5f5;
+            overflow-y: auto;
+        }
+        #scoreboard h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        #scoreboard ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #scoreboard li {
+            padding: 6px 4px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<div id="grid"><!-- player-slots --></div>
+
+<div id="scoreboard">
+    <h2>Scoreboard</h2>
+    <ul id="board-list"></ul>
+</div>
+
+<script>
+    const gridEl      = document.getElementById('grid');
+    const boardListEl = document.getElementById('board-list');
+    let players       = [];
+
+    // Render 4 stars based on level 1–4
+    function renderStars(level) {
+        let html = '';
+        for (let i = 1; i <= 4; i++) {
+            html += `<span class="star">${i <= level ? '★' : '☆'}</span>`;
+        }
+        return html;
+    }
+
+    // Re-render both grid and scoreboard
+    function render() {
+        // Grid (5 rows × 6 cols = 30 slots)
+        gridEl.innerHTML = '';
+        for (let i = 0; i < 30; i++) {
+            const p = players[i];
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            if (p) {
+                card.innerHTML = `
+            <div class="player-info">
+              <strong>${p.username}</strong>
+              ${p.message ? `<div>${p.message}</div>` : ''}
+            </div>
+            <div class="player-stars">
+              ${renderStars(p.level)}
+            </div>
+          `;
+            }
+            gridEl.appendChild(card);
+        }
+
+        // Scoreboard: sort by level desc, then lastLevelUpAt desc
+        const sorted = [...players]
+            .filter(p => p !== undefined)
+            .sort((a, b) => {
+                if (b.level !== a.level) {
+                    return b.level - a.level;
+                }
+                return new Date(b.lastLevelUpAt) - new Date(a.lastLevelUpAt);
+            });
+
+        boardListEl.innerHTML = '';
+        sorted.forEach(p => {
+            const li = document.createElement('li');
+            li.textContent = `${p.username} — Level ${p.level}`;
+            boardListEl.appendChild(li);
+        });
+    }
+
+    // Open SSE connection
+    const evtSource = new EventSource('/api/playersview');
+
+    // Listen for events
+    evtSource.addEventListener('LEVEL_UP', e => {
+        try {
+            const arr = JSON.parse(e.data);
+            // arr: up to 30 { username, level, lastLevelUpAt, message }
+            players = arr;
+            render();
+        } catch (err) {
+            console.error('Failed to parse SSE data:', err);
+        }
+    });
+
+    evtSource.onerror = err => {
+        console.error('SSE connection error:', err);
+        // TODO: attempt reconnect
+    };
+</script>
+
+</body>
+</html>
