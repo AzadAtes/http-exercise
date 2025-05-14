@@ -1,7 +1,7 @@
 package com.example.httpexercise.controller;
 
 import com.example.httpexercise.model.Player;
-import com.example.httpexercise.model.event.LevelUpEvent;
+import com.example.httpexercise.model.event.UpdateEvent;
 import com.example.httpexercise.service.PlayersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -35,7 +35,7 @@ public class PlayersViewController {
         try {
             List<Player> currentPlayers = playersService.getPlayers();
             emitter.send(SseEmitter.event()
-                    .name("LEVEL_UP")
+                    .name("UPDATE")
                     .data(currentPlayers, MediaType.APPLICATION_JSON));
         } catch (Exception e) {
             emitter.completeWithError(e);
@@ -44,7 +44,7 @@ public class PlayersViewController {
     }
 
     @EventListener
-    public void handleLevelUpEvent(LevelUpEvent event) {
+    public void handleLevelUpEvent(UpdateEvent event) {
 
         List<SseEmitter> deadEmitters = new ArrayList<>();
         List<Player> updatedPlayers = playersService.getPlayers(); // Assuming this returns a List<Player>
@@ -52,7 +52,7 @@ public class PlayersViewController {
         for (SseEmitter emitter : emitters) {
             try {
                 emitter.send(SseEmitter.event()
-                        .name("LEVEL_UP")
+                        .name("UPDATE")
                         .data(updatedPlayers, MediaType.APPLICATION_JSON));
             } catch (Exception e) {
                 deadEmitters.add(emitter);

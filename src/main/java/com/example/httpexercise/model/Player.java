@@ -7,12 +7,18 @@ public class Player {
     private final int    level;
     private final LocalDateTime lastLevelUpAt;
     private final String message;
+    private final Long messageId;
 
-    public Player(String username, int level, LocalDateTime lastLevelUpAt, String message) {
+    public Player(String username, int level, LocalDateTime lastLevelUpAt, String message, Long messageId) {
         this.username       = username;
         this.level          = level;
         this.lastLevelUpAt  = lastLevelUpAt;
         this.message = message;
+        this.messageId = messageId;
+    }
+
+    public Long getMessageId() {
+        return messageId;
     }
 
     public String getMessage() {

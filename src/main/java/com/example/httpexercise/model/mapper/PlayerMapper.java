@@ -24,12 +24,14 @@ public class PlayerMapper {
         Message latestMessage = messageRepository.findTopByUserOrderByUpdatedAtDescCreatedAtDesc(user);
 
         String messageContent = (user.getLevel() == 4) ? null : (latestMessage != null ? latestMessage.getContent() : null);
+        Long messageId = (user.getLevel() == 4) ? null : (latestMessage != null ? latestMessage.getId() : null);
 
         return new Player(
                 user.getUsername(),
                 user.getLevel(),
                 user.getLastLevelUpAt(),
-                messageContent
+                messageContent,
+                messageId
         );
     }
 

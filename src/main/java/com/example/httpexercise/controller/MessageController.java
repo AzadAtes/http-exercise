@@ -3,6 +3,7 @@ package com.example.httpexercise.controller;
 import com.example.httpexercise.model.entity.Message;
 import com.example.httpexercise.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

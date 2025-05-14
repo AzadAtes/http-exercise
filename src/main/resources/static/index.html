@@ -107,6 +107,7 @@
             <div class="player-info">
               <strong>${p.username}</strong>
               ${p.message ? `<div>${p.message}</div>` : ''}
+              ${p.messageId ? `<div>${p.messageId}</div>` : ''}
             </div>
             <div class="player-stars">
               ${renderStars(p.level)}
@@ -127,9 +128,9 @@
             });
 
         boardListEl.innerHTML = '';
-        sorted.forEach(p => {
+        sorted.forEach((p, index) => {
             const li = document.createElement('li');
-            li.textContent = `${p.username} — Level ${p.level}`;
+            li.textContent = `${index+1}. ${p.username} — Level ${p.level}`;
             boardListEl.appendChild(li);
         });
     }
@@ -138,7 +139,7 @@
     const evtSource = new EventSource('/api/playersview');
 
     // Listen for events
-    evtSource.addEventListener('LEVEL_UP', e => {
+    evtSource.addEventListener('UPDATE', e => {
         try {
             const arr = JSON.parse(e.data);
             // arr: up to 30 { username, level, lastLevelUpAt, message }

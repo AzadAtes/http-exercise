@@ -2,9 +2,11 @@ package com.example.httpexercise.service;
 
 import com.example.httpexercise.model.entity.Message;
 import com.example.httpexercise.model.entity.User;
+import com.example.httpexercise.model.event.UpdateEvent;
 import com.example.httpexercise.repository.MessageRepository;
 import com.example.httpexercise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final PlayersService playersService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private User getCurrentUser() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
@@ -43,6 +46,7 @@ public class MessageService {
         message.setCreatedAt(LocalDateTime.now());
         var result = messageRepository.save(message);
         playersService.updateLevelIfAtLevel(1);
+        eventPublisher.publishEvent(new UpdateEvent(this));
         return result;
     }
 
@@ -55,6 +59,7 @@ public class MessageService {
                 message.setUpdatedAt(LocalDateTime.now());
                 var result = Optional.of(messageRepository.save(message));
                 playersService.updateLevelIfAtLevel(2);
+                eventPublisher.publishEvent(new UpdateEvent(this));
                 return result;
             } else {
                 throw new SecurityException("You can only update your own messages");
@@ -70,6 +75,7 @@ public class MessageService {
             if (message.getUser().equals(getCurrentUser())) {
                 messageRepository.delete(message);
                 playersService.updateLevelIfAtLevel(3);
+                eventPublisher.publishEvent(new UpdateEvent(this));
                 return true;
             } else {
                 throw new SecurityException("You can only delete your own messages");
