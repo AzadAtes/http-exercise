@@ -50,7 +50,7 @@ public class MessageService {
         Optional<Message> optionalMessage = messageRepository.findById(id);
         if (optionalMessage.isPresent()) {
             Message message = optionalMessage.get();
-            if (message.getUser().equals(getCurrentUser())) {
+            if (message.getUser().getId().equals(getCurrentUser().getId())) {
                 message.setContent(content);
                 message.setUpdatedAt(LocalDateTime.now());
                 var result = Optional.of(messageRepository.save(message));
